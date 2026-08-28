@@ -21,7 +21,7 @@ export const DisqusComments: React.FC<DisqusCommentsProps> = ({ currentLocation 
     url: pageUrl,
     identifier: `totoro-sg-${currentLocation.id}`,
     title: `Umbrella Totoro - ${currentLocation.name} (${currentLocation.region} Region) Weather`,
-    language: 'zh_TW',
+    language: 'en_US',
   };
 
   useEffect(() => {
@@ -105,7 +105,7 @@ export const DisqusComments: React.FC<DisqusCommentsProps> = ({ currentLocation 
           <div className="mt-3 flex items-center justify-between text-[11px] text-[#717971] font-medium px-1">
             <span className="flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-[#90BE6D]" />
-              Disqus comments for {currentLocation.name} (shortname: {shortname}, lang: zh_TW)
+              Disqus comments for {currentLocation.name} (shortname: {shortname}, lang: en_US)
             </span>
           </div>
         </div>
