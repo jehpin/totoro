@@ -158,6 +158,61 @@ app.get('/api/weather/live', async (_req, res) => {
   }
 });
 
+// Standalone iframe host for Disqus embed in US English (isolates cross-origin script execution)
+app.get('/api/disqus-embed', (req, res) => {
+  const shortname = String(req.query.shortname || 'totoro-2').replace(/[^a-zA-Z0-9_-]/g, '');
+  const id = String(req.query.id || 'orchard-road').replace(/[^a-zA-Z0-9_-]/g, '');
+  const rawTitle = String(req.query.title || 'Singapore Weather');
+  const safeTitle = rawTitle.replace(/[\\"'<>]/g, '');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disqus Comments</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 4px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: transparent;
+      color: #1e1b13;
+    }
+    #disqus_thread {
+      min-height: 240px;
+    }
+  </style>
+  <script>
+    window.onerror = function() { return true; };
+    window.addEventListener('error', function(e) { e.preventDefault(); return true; }, true);
+    window.addEventListener('unhandledrejection', function(e) { e.preventDefault(); return true; }, true);
+  </script>
+</head>
+<body>
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'https://totoro-sg.applet.local/location/' + encodeURIComponent('${id}');
+      this.page.identifier = 'totoro-sg-' + encodeURIComponent('${id}');
+      this.page.title = '${safeTitle}';
+      this.language = 'en_US';
+    };
+    (function() {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://${shortname}.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+</body>
+</html>`;
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.send(html);
+});
+
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', app: 'Umbrella Totoro', service: 'live-weather-v2' });
 });
