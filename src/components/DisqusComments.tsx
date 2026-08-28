@@ -11,7 +11,7 @@ export const DisqusComments: React.FC<DisqusCommentsProps> = ({ currentLocation 
   const [reloadKey, setReloadKey] = useState(0);
 
   const shortname = 'totoro-2';
-  const embedSrc = `/api/disqus-embed?shortname=${shortname}&id=${encodeURIComponent(currentLocation.id)}&title=${encodeURIComponent(currentLocation.name)}`;
+  const embedSrc = `/disqus-embed.html?shortname=${shortname}&id=${encodeURIComponent(currentLocation.id)}&title=${encodeURIComponent(currentLocation.name)}`;
   const directUrl = `https://${shortname}.disqus.com`;
 
   return (
