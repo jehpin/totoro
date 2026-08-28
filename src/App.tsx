@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
 import { VerdictSection } from './components/VerdictSection';
 import { WeatherStatsGrid } from './components/WeatherStatsGrid';
+import { DisqusComments } from './components/DisqusComments';
 import { ForecastView } from './components/ForecastView';
 import { StationsView } from './components/StationsView';
 import { SettingsModal } from './components/SettingsModal';
@@ -130,6 +131,11 @@ export default function App() {
             <WeatherStatsGrid
               weather={currentLocation.weather}
               hourlyForecast={currentLocation.hourlyForecast}
+            />
+
+            {/* Community Disqus Discussion & Comment Count */}
+            <DisqusComments
+              currentLocation={currentLocation}
             />
           </>
         )}
