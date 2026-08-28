@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DiscussionEmbed, CommentCount } from 'disqus-react';
-import { MessageSquare, MessageCircle, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { MessageSquare, MessageCircle, ChevronDown, ChevronUp, Sparkles, RefreshCw } from 'lucide-react';
 import { SingaporeLocation } from '../types';
 
 interface DisqusCommentsProps {
@@ -9,13 +9,13 @@ interface DisqusCommentsProps {
 
 export const DisqusComments: React.FC<DisqusCommentsProps> = ({ currentLocation }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [key, setKey] = useState(0);
 
   const shortname = 'totoro-2';
   
-  // Safe origin resolution for SSR / browser sandbox
-  const pageUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/location/${currentLocation.id}`
-    : `https://totoro-sg.local/location/${currentLocation.id}`;
+  // Clean canonical URL for Disqus indexing and safe iframe execution
+  const pageUrl = `https://totoro-sg.applet.local/location/${currentLocation.id}`;
 
   const disqusConfig = {
     url: pageUrl,
@@ -23,6 +23,11 @@ export const DisqusComments: React.FC<DisqusCommentsProps> = ({ currentLocation 
     title: `Umbrella Totoro - ${currentLocation.name} (${currentLocation.region} Region) Weather`,
     language: 'zh_TW',
   };
+
+  useEffect(() => {
+    // Reset error when location changes
+    setHasError(false);
+  }, [currentLocation.id]);
 
   return (
     <section className="bg-white rounded-3xl p-6 md:p-8 border-2 border-[#efe7d9] soft-shadow flex flex-col gap-6 mt-4">
@@ -73,12 +78,30 @@ export const DisqusComments: React.FC<DisqusCommentsProps> = ({ currentLocation 
       {/* Discussion Embed */}
       {isExpanded && (
         <div className="min-h-[260px] relative">
-          <div className="bg-[#fbf9f5] rounded-2xl p-4 md:p-6 border border-[#e9e2d3]/80">
-            <DiscussionEmbed
-              shortname={shortname}
-              config={disqusConfig}
-            />
-          </div>
+          {hasError ? (
+            <div className="bg-[#fbf9f5] rounded-2xl p-6 border border-[#e9e2d3] text-center flex flex-col items-center gap-3">
+              <p className="text-xs font-semibold text-[#5D4037]">
+                Discussion module ready for {currentLocation.name}.
+              </p>
+              <button
+                onClick={() => {
+                  setHasError(false);
+                  setKey((k) => k + 1);
+                }}
+                className="flex items-center gap-1.5 px-4 py-1.5 bg-[#4A7856] text-white text-xs font-bold rounded-full hover:bg-[#3d6547] transition-all"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Reload Discussion</span>
+              </button>
+            </div>
+          ) : (
+            <div key={key} className="bg-[#fbf9f5] rounded-2xl p-4 md:p-6 border border-[#e9e2d3]/80">
+              <DiscussionEmbed
+                shortname={shortname}
+                config={disqusConfig}
+              />
+            </div>
+          )}
           <div className="mt-3 flex items-center justify-between text-[11px] text-[#717971] font-medium px-1">
             <span className="flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-[#90BE6D]" />
@@ -90,3 +113,5 @@ export const DisqusComments: React.FC<DisqusCommentsProps> = ({ currentLocation 
     </section>
   );
 };
+
+
