@@ -1,0 +1,10 @@
+{
+  "name": "Umbrella Totoro",
+  "description": "A whimsical, sophisticated Singapore weather & umbrella companion featuring real-time rainfall forecasts, live data.gov.sg weather APIs, islandwide station locator, and colloquial weather intelligence.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
