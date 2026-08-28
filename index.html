@@ -10,10 +10,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script>
       (function() {
-        // Prevent cross-origin third-party widget errors (e.g. Disqus) from bubbling to runtime error overlays
+        function shouldSuppress(msg, src) {
+          if (!msg || msg === 'Script error.' || msg === 'Script error' || String(msg).indexOf('Script error') !== -1) return true;
+          if (src && (src.indexOf('disqus') !== -1 || src.indexOf('disquscdn') !== -1)) return true;
+          return false;
+        }
+
         var origOnError = window.onerror;
         window.onerror = function(msg, url, line, col, err) {
-          if (msg === 'Script error.' || !msg || (url && (url.indexOf('disqus') !== -1 || url.indexOf('disquscdn') !== -1))) {
+          if (shouldSuppress(msg, url)) {
             return true;
           }
           if (typeof origOnError === 'function') {
@@ -23,7 +28,7 @@
         };
 
         window.addEventListener('error', function(event) {
-          if (event.message === 'Script error.' || !event.message || (event.filename && (event.filename.indexOf('disqus') !== -1 || event.filename.indexOf('disquscdn') !== -1))) {
+          if (shouldSuppress(event.message, event.filename)) {
             event.stopImmediatePropagation();
             event.preventDefault();
             return true;
@@ -31,8 +36,8 @@
         }, true);
 
         window.addEventListener('unhandledrejection', function(event) {
-          var reasonStr = String(event.reason || '');
-          if (reasonStr.indexOf('Script error') !== -1 || reasonStr.indexOf('disqus') !== -1 || reasonStr.indexOf('disquscdn') !== -1) {
+          var reasonStr = (event && event.reason) ? (event.reason.message || String(event.reason)) : '';
+          if (shouldSuppress(reasonStr, '')) {
             event.stopImmediatePropagation();
             event.preventDefault();
             return true;
