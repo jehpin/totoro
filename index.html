@@ -8,6 +8,38 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      (function() {
+        // Prevent cross-origin third-party widget errors (e.g. Disqus) from bubbling to runtime error overlays
+        var origOnError = window.onerror;
+        window.onerror = function(msg, url, line, col, err) {
+          if (msg === 'Script error.' || !msg || (url && (url.indexOf('disqus') !== -1 || url.indexOf('disquscdn') !== -1))) {
+            return true;
+          }
+          if (typeof origOnError === 'function') {
+            return origOnError.apply(this, arguments);
+          }
+          return false;
+        };
+
+        window.addEventListener('error', function(event) {
+          if (event.message === 'Script error.' || !event.message || (event.filename && (event.filename.indexOf('disqus') !== -1 || event.filename.indexOf('disquscdn') !== -1))) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return true;
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(event) {
+          var reasonStr = String(event.reason || '');
+          if (reasonStr.indexOf('Script error') !== -1 || reasonStr.indexOf('disqus') !== -1 || reasonStr.indexOf('disquscdn') !== -1) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return true;
+          }
+        }, true);
+      })();
+    </script>
   </head>
   <body class="bg-[#fff8ef] text-[#1e1b13] selection:bg-[#90BE6D] selection:text-[#1e1b13]">
     <div id="root"></div>
